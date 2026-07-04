@@ -1,7 +1,8 @@
 import express from "express";
 import { sendOtp } from "../utils/sendOtp.js";
+import Otp from "../models/otpModel.js";
 
-export async function send_Otp(req,res) {
+export async function sendOtpController(req,res) {
      
    
 
@@ -13,6 +14,23 @@ export async function send_Otp(req,res) {
         message : "otp sent",
         data
     })
+}
+
+export async function verifyotpController(req,res) {
+     
+    const {email,otp} = req.body;
+
+    const otpdata = await Otp.findOne({email,otp});
+    if(!otpdata){
+        return res.status(400).json({
+           message  : "invalid otp "
+        })
+    }
+
+    return res.json({
+        message : "otp verified succesfully"
+    })
+
 }
 
 
