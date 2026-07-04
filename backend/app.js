@@ -1,4 +1,6 @@
 import express from "express";
+import  dotenv from "dotenv"
+dotenv.config()
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import directoryRoutes from "./routes/directoryRoutes.js";
@@ -7,7 +9,7 @@ import userRoutes from "./routes/userRoutes.js";
 import checkAuth from "./middlewares/authMiddleware.js";
 import { connectDB } from "./config/db.js";
 
-const mySecretKey = "ProCodrr-storageApp-123$#";
+const mySecretKey = process.env.COOKIE_SECRET
 
 await connectDB();
 

@@ -100,9 +100,23 @@ export const getCurrentUser = (req, res) => {
 
 export const logout = async (req, res) => {
   
-   const {sid} = req.signesCookies;
+   const {sid} = req.signedCookies;
    await Session.findByIdAndDelete(sid)
    
   res.clearCookie("sid");
-  res.status(204).end();
+  res.status(200).json({
+    message : "user logged out!"
+  }).end();
 };
+
+export const logoutAll = async (req,res)=> {
+  const {sid} = req.signedCookies; 
+  const session = await Session.findById(sid);
+ console.log("session ," , session)
+
+ const deletedUSer =  await Session.deleteMany({userId : session.userId})
+ console.log(deletedUSer)
+
+  res.clearCookie("sid");
+  res.status(204).end();
+}
