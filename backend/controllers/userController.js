@@ -74,6 +74,13 @@ export const login = async (req, res, next) => {
     return res.status(404).json({ error: "Invalid Credentials" });
   }
 
+   const allsessions = await Session.find({userId : user.id})
+   if(allsessions.length >= 2 ){
+     
+       await allsessions[0].deleteOne()
+
+   }
+   
   const session = await Session.create({ userId: user._id });
 
   res.cookie("sid", session.id, {
@@ -91,7 +98,11 @@ export const getCurrentUser = (req, res) => {
   });
 };
 
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
+  
+   const {sid} = req.signesCookies;
+   await Session.findByIdAndDelete(sid)
+   
   res.clearCookie("sid");
   res.status(204).end();
 };
