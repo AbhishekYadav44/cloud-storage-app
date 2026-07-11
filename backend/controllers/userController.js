@@ -6,14 +6,14 @@ import Session from "../models/sessionModel.js";
 import Otp from "../models/otpModel.js";
 
 export const register = async (req, res, next) => {
-  const { name, email, password , otp } = req.body;
+  const { name, email, password, otp } = req.body;
   const session = await mongoose.startSession();
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  const verifyotp = await Otp.findOne({email,otp});
+  const verifyotp = await Otp.findOne({ email, otp });
 
-  if(!verifyotp){
-    return res.json({message : "invalid or expired otp"})
+  if (!verifyotp) {
+    return res.json({ message: "invalid or expired otp" })
   }
 
   try {
@@ -81,13 +81,13 @@ export const login = async (req, res, next) => {
     return res.status(404).json({ error: "Invalid Credentials" });
   }
 
-   const allsessions = await Session.find({userId : user.id})
-   if(allsessions.length >= 2 ){
-     
-       await allsessions[0].deleteOne()
+  const allsessions = await Session.find({ userId: user.id })
+  if (allsessions.length >= 2) {
 
-   }
-   
+    await allsessions[0].deleteOne()
+
+  }
+
   const session = await Session.create({ userId: user._id });
 
   res.cookie("sid", session.id, {
@@ -117,65 +117,98 @@ export const getCurrentUser = (req, res) => {
     name: req.user.name,
     email: req.user.email,
     picture: req.user.picture,
-    role : req.user.role
+    role: req.user.role
   });
 };
 
-export const logoutById = async(req,res)=>{
-   try{
-  
-      const sessions  = await  Session.deleteMany({userId : req.params.userId})
-      res.status(204).json({
-        message : "user logged out!"
-      })
-   }catch(e){
-     return res.json({
-      
-      message : "err while loggin out",
+export const logoutById = async (req, res) => {
+  try {
+
+    const sessions = await Session.deleteMany({ userId: req.params.userId })
+    res.status(204).json({
+      message: "user logged out!"
+    })
+  } catch (e) {
+    return res.json({
+
+      message: "err while loggin out",
       e
-     })
-   }
+    })
+  }
 }
 
 
 
 export const logout = async (req, res) => {
-  
-   const {sid} = req.signedCookies;
-   await Session.findByIdAndDelete(sid)
-   
+
+  const { sid } = req.signedCookies;
+  await Session.findByIdAndDelete(sid)
+
   res.clearCookie("sid");
   res.status(200).json({
-    message : "user logged out!"
+    message: "user logged out!"
   }).end();
 };
 
-export const logoutAll = async (req,res)=> {
-  const {sid} = req.signedCookies; 
+export const logoutAll = async (req, res) => {
+  const { sid } = req.signedCookies;
   const session = await Session.findById(sid);
- console.log("session ," , session)
+  console.log("session ,", session)
 
- const deletedUSer =  await Session.deleteMany({userId : session.userId})
- console.log(deletedUSer)
+  const deletedUSer = await Session.deleteMany({ userId: session.userId })
+  console.log(deletedUSer)
 
   res.clearCookie("sid");
   res.status(204).end();
 }
 
-export const deleteUser = async(req,res)=>{
-    const userId = req.params.userId;
-    try{
- 
-       await User.findByIdAndDelete({userId})
-       await File.findByIdAndDelete({userId})
-       await Directory.findByIdAndDelete({userId})
-       await Session.findByIdAndDelete({userId})
-       return res.status(204).json({
-        message : "user deleted succesfully!"
-       })
-       
-    }catch(err){
-        err
-        return res.json({message : "user not deleted!"})
+export const deleteUser = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    if (req.user._id.toString() === userId) {
+      return res.status(403).json({ error: "You can not delete yourself." });
     }
+
+    await User.findByIdAndUpdate(userId, { deleted: true })
+
+    return res.status(204).json({
+      message: "user deleted succesfully!"
+    })
+
+  } catch (err) {
+    err
+    return res.json({ message: "user not deleted!" })
+  }
+}
+
+export const deleteUserhard = async (req, res) => {
+  try {
+
+    const userId = req.params.userId;
+    const user = await User.findById({ userId })
+      if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+     
+    if (user.deleted === true) {
+
+      await User.findByIdAndDelete({ userId })
+      await File.findByIdAndDelete({ userId })
+      await Directory.findByIdAndDelete({ userId })
+      await Session.findByIdAndDelete({ userId })
+    }
+
+    return res.json({
+      message : "user permanentely deleted!"
+    })
+
+  } catch (err) {
+    return res.json({
+      err,
+      message: "err while deleting user!"
+    })
+  }
 }

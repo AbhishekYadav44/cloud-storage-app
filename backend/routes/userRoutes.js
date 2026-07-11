@@ -7,7 +7,8 @@ import {
   logout,
   logoutAll,
   register,
-  deleteUser
+  deleteUser,
+  deleteUserhard
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -24,5 +25,6 @@ router.post("/user/:userId/logout" , checkAuth, checknotRegularUser , )
 router.post("/user/logout", logout);
 router.post("/user/logout-all", logoutAll)
 router.delete("/users/:userId", checkAuth, checkIsAdminUser, deleteUser);
+router.delete("/users/:userId/hard", checkAuth, checkIsAdminUser, deleteUserhard);
 
 export default router;
