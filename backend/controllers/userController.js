@@ -161,3 +161,21 @@ export const logoutAll = async (req,res)=> {
   res.clearCookie("sid");
   res.status(204).end();
 }
+
+export const deleteUser = async(req,res)=>{
+    const userId = req.params.userId;
+    try{
+ 
+       await User.findByIdAndDelete({userId})
+       await File.findByIdAndDelete({userId})
+       await Directory.findByIdAndDelete({userId})
+       await Session.findByIdAndDelete({userId})
+       return res.status(204).json({
+        message : "user deleted succesfully!"
+       })
+       
+    }catch(err){
+        err
+        return res.json({message : "user not deleted!"})
+    }
+}
