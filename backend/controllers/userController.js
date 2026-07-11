@@ -3,11 +3,18 @@ import User from "../models/userModel.js";
 import mongoose, { Types } from "mongoose";
 import bcrypt from "bcrypt";
 import Session from "../models/sessionModel.js";
+import Otp from "../models/otpModel.js";
 
 export const register = async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password , otp } = req.body;
   const session = await mongoose.startSession();
   const hashedPassword = await bcrypt.hash(password, 12);
+
+  const verifyotp = await Otp.findOne({email,otp});
+
+  if(!verifyotp){
+    return res.json({message : "invalid or expired otp"})
+  }
 
   try {
     const rootDirId = new Types.ObjectId();
@@ -90,13 +97,30 @@ export const login = async (req, res, next) => {
   });
   res.json({ message: "logged in" });
 };
+export const getAllUsers = async (req, res) => {
+  const allUsers = await User.find().lean();
+  const allSessions = await Session.find().lean();
+  const allSessionsUserId = allSessions.map(({ userId }) => userId.toString());
+  const allSessionsUserIdSet = new Set(allSessionsUserId);
+
+  const transformedUsers = allUsers.map(({ _id, name, email }) => ({
+    id: _id,
+    name,
+    email,
+    isLoggedIn: allSessionsUserIdSet.has(_id.toString()),
+  }));
+  res.status(200).json(transformedUsers);
+};
 
 export const getCurrentUser = (req, res) => {
   res.status(200).json({
     name: req.user.name,
     email: req.user.email,
+    picture: req.user.picture,
   });
 };
+
+
 
 export const logout = async (req, res) => {
   
