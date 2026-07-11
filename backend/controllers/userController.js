@@ -117,8 +117,25 @@ export const getCurrentUser = (req, res) => {
     name: req.user.name,
     email: req.user.email,
     picture: req.user.picture,
+    role : req.user.role
   });
 };
+
+export const logoutById = async(req,res)=>{
+   try{
+  
+      const sessions  = await  Session.deleteMany({userId : req.params.userId})
+      res.status(204).json({
+        message : "user logged out!"
+      })
+   }catch(e){
+     return res.json({
+      
+      message : "err while loggin out",
+      e
+     })
+   }
+}
 
 
 

@@ -23,3 +23,13 @@ export default async function checkAuth(req, res, next) {
   req.user = user;
   next();
 }
+
+export  const   checknotRegularUser = (req,res,next)=> {
+    
+     if(req.user.role !== "user") return next();
+
+     return res.json({
+      message : "you can not access useres"
+     })
+   
+}
