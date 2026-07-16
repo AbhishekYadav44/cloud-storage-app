@@ -8,7 +8,8 @@ import {
   logoutAll,
   register,
   deleteUser,
-  deleteUserhard
+  deleteUserhard,
+  getDeletedUsers
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -20,11 +21,12 @@ router.post("/login", login);
 router.get("/user", checkAuth, getCurrentUser);
 
 router.get("/users", checkAuth , checknotRegularUser);
+router.get("/user/deletedUsers" , getDeletedUsers)
 // this route is for admin so that he can logout any user forcefully
 router.post("/user/:userId/logout" , checkAuth, checknotRegularUser , )
 router.post("/user/logout", logout);
 router.post("/user/logout-all", logoutAll)
-router.delete("/users/:userId", checkAuth, checkIsAdminUser, deleteUser);
-router.delete("/users/:userId/hard", checkAuth, checkIsAdminUser, deleteUserhard);
+router.delete("/users/:userId", checkAuth, checknotRegularUser, deleteUser);
+router.delete("/users/:userId/hard", checkAuth, checknotRegularUser, deleteUserhard);
 
 export default router;
