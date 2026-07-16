@@ -23,7 +23,7 @@ router.get("/user", checkAuth, getCurrentUser);
 router.get("/users", checkAuth , checknotRegularUser);
 router.get("/user/deletedUsers" , getDeletedUsers)
 // this route is for admin so that he can logout any user forcefully
-router.post("/user/:userId/logout" , checkAuth, checknotRegularUser , )
+router.post("/user/:userId/logout" , checkAuth, checknotRegularUser  )
 router.post("/user/logout", logout);
 router.post("/user/logout-all", logoutAll)
 router.delete("/users/:userId", checkAuth, checknotRegularUser, deleteUser);

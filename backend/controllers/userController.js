@@ -6,6 +6,7 @@ import Session from "../models/sessionModel.js";
 import Otp from "../models/otpModel.js";
 
 export const register = async (req, res, next) => {
+  console.log("req fro frontend")
   const { name, email, password, otp } = req.body;
   const session = await mongoose.startSession();
   const hashedPassword = await bcrypt.hash(password, 12);
