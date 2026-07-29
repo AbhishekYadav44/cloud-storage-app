@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Field from "@/components/Field";
-import Button from "@/components/Button";
+import Field from "@/components/ui/Field";
+import Button from "@/components/ui/Button";
 import { sendOtp, register } from "@/app/services/auth";
 
 export default function RegisterPage() {

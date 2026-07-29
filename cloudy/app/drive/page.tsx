@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 import {getDirectory,createDirectory, renameDirectory,deleteDirectory,} from "@/app/services/directory";
 import { uploadFile,renameFile,deleteFile,getFileUrl,} from "../services/file"
 import { getCurrentUser,logout } from "../services/users";
