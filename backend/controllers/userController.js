@@ -196,7 +196,7 @@ export const deleteUserhard = async (req, res) => {
   try {
 
     const userId = req.params.userId;
-    const user = await User.findById({ userId })
+    const user = await User.findById( userId )
       if (!user) {
       return res.status(404).json({
         message: "User not found",
