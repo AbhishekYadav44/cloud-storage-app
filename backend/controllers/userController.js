@@ -21,7 +21,7 @@ export const register = async (req, res, next) => {
     const rootDirId = new Types.ObjectId();
     const userId = new Types.ObjectId();
 
-    session.startTransaction();
+    await session.startTransaction();
 
     await Directory.insertOne(
       {
@@ -44,11 +44,11 @@ export const register = async (req, res, next) => {
       { session }
     );
 
-    session.commitTransaction();
+    await session.commitTransaction();
 
     res.status(201).json({ message: "User Registered" });
   } catch (err) {
-    session.abortTransaction();
+   await session.abortTransaction();
     console.log(err);
     if (err.code === 121) {
       res
@@ -65,6 +65,8 @@ export const register = async (req, res, next) => {
     } else {
       next(err);
     }
+  } finally {
+    await session.endSession();
   }
 };
 
@@ -99,7 +101,7 @@ export const login = async (req, res, next) => {
   res.json({ message: "logged in" });
 };
 export const getAllUsers = async (req, res) => {
-  const allUsers = await User.find({deleted : false}).lean();
+  const allUsers = await User.find({ deleted: false }).lean();
   const allSessions = await Session.find().lean();
   const allSessionsUserId = allSessions.map(({ userId }) => userId.toString());
   const allSessionsUserIdSet = new Set(allSessionsUserId);
@@ -196,14 +198,14 @@ export const deleteUserhard = async (req, res) => {
   try {
 
     const userId = req.params.userId;
-    const user = await User.findById( userId )
-      if (!user) {
+    const user = await User.findById(userId)
+    if (!user) {
       return res.status(404).json({
         message: "User not found",
       });
     }
 
-     
+
     if (user.deleted === true) {
 
       await User.findByIdAndDelete({ userId })
@@ -213,7 +215,7 @@ export const deleteUserhard = async (req, res) => {
     }
 
     return res.json({
-      message : "user permanentely deleted!"
+      message: "user permanentely deleted!"
     })
 
   } catch (err) {
@@ -223,3 +225,32 @@ export const deleteUserhard = async (req, res) => {
     })
   }
 }
+
+
+
+export const googleCallback = async (req, res) => {
+  try {
+    const user = req.user;
+
+    const allSessions = await Session.find({ userId: user._id });
+
+    if (allSessions.length >= 2) {
+      await allSessions[0].deleteOne();
+    }
+
+    const session = await Session.create({
+      userId: user._id,
+    });
+
+    res.cookie("sid", session._id.toString(), {
+      httpOnly: true,
+      signed: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    });
+
+    res.redirect(`${process.env.CLIENT_URL}/drive`);
+  } catch (error) {
+    console.error(error);
+    res.redirect(`${process.env.CLIENT_URL}/login`);
+  }
+};

@@ -1,6 +1,5 @@
 import express from "express";
-import validateIdMiddleware from "../middlewares/validateIdMiddleware.js";
-
+import validateIdMiddleware from "../middlewares/validateIdMiddleware.js"
 import {
   createDirectory,
   deleteDirectory,

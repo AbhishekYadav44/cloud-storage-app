@@ -21,21 +21,35 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
+
       minLength: 4,
+    },
+    googleId: {
+      type: String,
+      default: null,
+    },
+
+    picture: {
+      type: String,
+      default: "",
+    },
+
+    isGoogleUser: {
+      type: Boolean,
+      default: false,
     },
     rootDirId: {
       type: Schema.Types.ObjectId,
       ref: "Directory",
     },
-    role : {
-      type : String,
-      enum : ["owner", "admin" , "user"],
-      default : "user"
+    role: {
+      type: String,
+      enum: ["owner", "admin", "user"],
+      default: "user"
     },
-    deleted : {
-      type : Boolean,
-      default : false
+    deleted: {
+      type: Boolean,
+      default: false
     }
   },
   {
