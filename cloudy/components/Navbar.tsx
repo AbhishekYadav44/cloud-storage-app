@@ -11,7 +11,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
 
-        {/* Logo */}
+      
 
         <Link href="/" className="flex items-center gap-3">
           <div className="rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 p-2">
@@ -23,7 +23,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop Menu */}
+        
 
         <nav className="hidden items-center gap-10 text-[15px] font-medium text-slate-600 lg:flex">
 
@@ -57,7 +57,7 @@ export default function Navbar() {
 
         </nav>
 
-        {/* Right */}
+      
 
         <div className="hidden items-center gap-4 lg:flex">
 
@@ -70,14 +70,12 @@ export default function Navbar() {
 
           <Link
             href="/register"
-            className="rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-3 font-medium text-white shadow-lg transition hover:scale-105"
+            className="rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-3 font-medium text-white shadow-lg  hover:scale-105 hover:translate-y-0.5 transition-all"
           >
             Get Started
           </Link>
 
         </div>
-
-        {/* Mobile Menu Button */}
 
         <button
           onClick={() => setOpen(!open)}
@@ -88,7 +86,6 @@ export default function Navbar() {
 
       </div>
 
-      {/* Mobile Menu */}
 
       {open && (
         <div className="border-t border-slate-200 bg-white lg:hidden">
@@ -127,6 +124,7 @@ export default function Navbar() {
             <Link
               href="/login"
               className="py-3 font-medium text-slate-700"
+              onClick={() => setOpen(false)}
             >
               Login
             </Link>
