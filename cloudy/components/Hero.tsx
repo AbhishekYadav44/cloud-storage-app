@@ -24,9 +24,7 @@ export default function Hero() {
           </h1>
 
           <p className="mt-8 max-w-xl text-lg leading-8 text-slate-600">
-            Cloudy is a modern cloud storage platform that helps you securely
-            upload, organize and access your files from any device with a fast
-            and simple experience.
+            Upload, organize and access your files securely from anywhere. Create folders, manage documents and keep everything synced in one place.
           </p>
 
           <div className="mt-10 flex flex-wrap gap-4">
