@@ -6,6 +6,7 @@ import User from "../models/userModel.js";
 import Directory from "../models/directoryModel.js";
 
 passport.use(
+  
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
@@ -37,16 +38,22 @@ passport.use(
             _id: userId,
             name: profile.displayName,
             email,
-            picture: profile.photos?.[0]?.value || "",
             password: null,
+            googleId: profile.id,
+            picture: profile.photos?.[0]?.value || "",
             rootDirId,
             isGoogleUser: true,
           });
         } else {
+          if (!user.googleId) {
+            user.googleId = profile.id;
+          }
+
           if (!user.picture && profile.photos?.length) {
             user.picture = profile.photos[0].value;
-            await user.save();
           }
+
+          await user.save();
         }
 
         return done(null, user);

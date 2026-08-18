@@ -22,7 +22,6 @@ type DirectoryData = {
 export default function DrivePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  // If there's no "id" in the URL, we're looking at the root folder.
   const currentId = searchParams.get("id") || undefined;
 
   const [user, setUser] = useState<{ name: string; role: string } | null>(null);
@@ -158,7 +157,7 @@ export default function DrivePage() {
 
       {dir && !loading && (
         <>
-          {/* folder header + actions */}
+         
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               {dir.parentDirId && (

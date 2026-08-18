@@ -21,7 +21,6 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-
       minLength: 4,
     },
     googleId: {
@@ -38,10 +37,12 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+
     rootDirId: {
       type: Schema.Types.ObjectId,
       ref: "Directory",
     },
+
     role: {
       type: String,
       enum: ["owner", "admin", "user"],
@@ -59,4 +60,4 @@ const userSchema = new Schema(
 
 const User = model("User", userSchema);
 
-export default User;
+export default User; 

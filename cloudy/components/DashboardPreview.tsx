@@ -13,7 +13,6 @@ export default function DashboardPreview() {
   return (
     <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
 
-      {/* Header */}
 
       <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
 
@@ -42,7 +41,6 @@ export default function DashboardPreview() {
 
       </div>
 
-      {/* Search */}
 
       <div className="border-b border-slate-200 p-5">
 
@@ -59,11 +57,9 @@ export default function DashboardPreview() {
 
       </div>
 
-      {/* Body */}
 
       <div className="grid grid-cols-[180px_1fr]">
 
-        {/* Sidebar */}
 
         <aside className="border-r border-slate-200 bg-slate-50 p-5">
 
@@ -86,7 +82,6 @@ export default function DashboardPreview() {
 
           </nav>
 
-          {/* Storage */}
 
           <div className="mt-10">
 
@@ -109,11 +104,9 @@ export default function DashboardPreview() {
 
         </aside>
 
-        {/* Main */}
 
         <main className="p-6">
 
-          {/* Stats */}
 
           <div className="grid grid-cols-3 gap-4">
 
@@ -155,7 +148,6 @@ export default function DashboardPreview() {
 
           </div>
 
-          {/* Recent Files */}
 
           <div className="mt-8">
 
