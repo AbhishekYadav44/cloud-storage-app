@@ -4,6 +4,8 @@ import mongoose, { Types } from "mongoose";
 import bcrypt from "bcrypt";
 import Session from "../models/sessionModel.js";
 import Otp from "../models/otpModel.js";
+import { createSession } from "../utils/session.js";
+import client from "../config/redis.js";
 
 export const register = async (req, res, next) => {
   console.log("req fro frontend")
@@ -48,7 +50,7 @@ export const register = async (req, res, next) => {
 
     res.status(201).json({ message: "User Registered" });
   } catch (err) {
-   await session.abortTransaction();
+    await session.abortTransaction();
     console.log(err);
     if (err.code === 121) {
       res
@@ -91,9 +93,9 @@ export const login = async (req, res, next) => {
 
   }
 
-  const session = await Session.create({ userId: user._id });
+  const sessionId = await createSession(user._id);
 
-  res.cookie("sid", session.id, {
+  res.cookie("sid", sessionId, {
     httpOnly: true,
     signed: true,
     maxAge: 60 * 1000 * 60 * 24 * 7,
@@ -134,20 +136,30 @@ export const getCurrentUser = (req, res) => {
   });
 };
 
-export const logoutById = async (req, res) => {
+export const logoutById = async (req, res, next) => {
   try {
+    const userId = req.params.userId;
 
-    const sessions = await Session.deleteMany({ userId: req.params.userId })
-    res.status(204).json({
+    const sessionIds = await client.sMembers(
+      `user:sessions:${userId}`
+    );
+
+    if (sessionIds.length > 0) {
+      await client.del(
+        sessionIds.map((id) => `session:${id}`)
+      );
+    }
+
+    await client.del(`user:sessions:${userId}`);
+
+    return res.status(200).json({
       message: "user logged out!"
-    })
-  } catch (e) {
-    return res.json({
+    });
 
-      message: "err while loggin out",
-      e
-    })
+  } catch (err) {
+    next(err);
   }
+
 }
 
 
@@ -155,7 +167,21 @@ export const logoutById = async (req, res) => {
 export const logout = async (req, res) => {
 
   const { sid } = req.signedCookies;
-  await Session.findByIdAndDelete(sid)
+  if (!sid) {
+    return res.status(401).json({
+      message: "Not logged in"
+    });
+  }
+  const userId = await client.get(`session:${sid}`);
+
+  if (userId) {
+    await client.del(`session:${sid}`);
+
+    await client.sRem(
+      `user:sessions:${userId}`,
+      sid
+    );
+  }
 
   res.clearCookie("sid");
   res.status(200).json({
@@ -165,12 +191,23 @@ export const logout = async (req, res) => {
 
 export const logoutAll = async (req, res) => {
   const { sid } = req.signedCookies;
-  const session = await Session.findById(sid);
-  console.log("session ,", session)
 
-  const deletedUSer = await Session.deleteMany({ userId: session.userId })
-  console.log(deletedUSer)
+  const userId = await client.get(`session:${sid}`)
 
+
+  if (!userId) {
+    return res.status(401).json({
+      message: "Session expired"
+    });
+  }
+
+  const sessionIds = await client.sMembers(`user:sessions:${userId}`)  // user:sessions:100 → { ABC, XYZ }  here sessionIds = [abc,scy]
+
+  await client.del(
+    sessionIds.map((id) => `session:${id}`)
+  );
+
+  await client.del(`user:sessions:${userId}`);
   res.clearCookie("sid");
   res.status(204).end();
 }

@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import client from "./config/redis.js";
 dotenv.config();
 
 import cors from "cors";
@@ -9,12 +10,15 @@ import fileRoutes from "./routes/fileRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 
+
+
 import checkAuth from "./middlewares/authMiddleware.js";
 import passport from "./utils/passport.js";
 import { connectDB } from "./config/db.js";
 const mySecretKey = process.env.COOKIE_SECRET
 
 await connectDB();
+await client.connect();
 
 const app = express();
 app.use(cookieParser(mySecretKey));
@@ -38,5 +42,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(4000, () => {
+  
   console.log(`Server Started`);
 });

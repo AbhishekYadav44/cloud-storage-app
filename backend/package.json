@@ -33,6 +33,9 @@
   "cors": "^2.8.5",
   
     
+  "crypto": "^1.0.1",
+  
+    
   "dotenv": "^17.4.2",
   
     
@@ -51,7 +54,10 @@
   "passport": "^0.7.0",
   
     
-  "passport-google-oauth20": "^2.0.0"
+  "passport-google-oauth20": "^2.0.0",
+  
+    
+  "redis": "^6.2.1"
   
   },
   
