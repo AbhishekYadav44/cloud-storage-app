@@ -264,22 +264,13 @@ export const deleteUserhard = async (req, res) => {
 }
 
 
-
 export const googleCallback = async (req, res) => {
   try {
     const user = req.user;
 
-    const allSessions = await Session.find({ userId: user._id });
+    const sessionId = await createSession(user._id);
 
-    if (allSessions.length >= 2) {
-      await allSessions[0].deleteOne();
-    }
-
-    const session = await Session.create({
-      userId: user._id,
-    });
-
-    res.cookie("sid", session._id.toString(), {
+    res.cookie("sid", sessionId, {
       httpOnly: true,
       signed: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
