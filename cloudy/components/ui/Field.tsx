@@ -1,5 +1,4 @@
-// A simple labeled input. Nothing fancy, just saves us repeating the
-// label + input markup on every form.
+
 
 export default function Field({
   label,

@@ -54,19 +54,18 @@ export const getFile = async (req, res) => {
     _id: id,
     userId: req.user._id,
   }).lean();
-  // Check if file exists
   if (!fileData) {
     return res.status(404).json({ error: "File not found!" });
   }
 
-  // If "download" is requested, set the appropriate headers
+  
   const filePath = `${process.cwd()}/storage/${id}${fileData.extension}`;
 
   if (req.query.action === "download") {
     return res.download(filePath, fileData.name);
   }
 
-  // Send file
+  
   return res.sendFile(filePath, (err) => {
     if (!res.headersSent && err) {
       return res.status(404).json({ error: "File not found!" });
@@ -81,7 +80,6 @@ export const renameFile = async (req, res, next) => {
     userId: req.user._id,
   });
 
-  // Check if file exists
   if (!file) {
     return res.status(404).json({ error: "File not found!" });
   }

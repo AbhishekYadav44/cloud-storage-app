@@ -1,4 +1,3 @@
-// A simple button. `loading` just disables it and changes the text.
 
 export default function Button({
   loading,

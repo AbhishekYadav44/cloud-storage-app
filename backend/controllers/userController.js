@@ -213,7 +213,9 @@ export const logoutAll = async (req, res) => {
 }
 
 export const deleteUser = async (req, res) => {
+  console.log("reached!")
   const userId = req.params.userId;
+  console.log(userId)
   try {
     if (req.user._id.toString() === userId) {
       return res.status(403).json({ error: "You can not delete yourself." });
@@ -226,7 +228,7 @@ export const deleteUser = async (req, res) => {
     })
 
   } catch (err) {
-    err
+    console.log(err)
     return res.json({ message: "user not deleted!" })
   }
 }
@@ -235,6 +237,7 @@ export const deleteUserhard = async (req, res) => {
   try {
 
     const userId = req.params.userId;
+    console.log(userId)
     const user = await User.findById(userId)
     if (!user) {
       return res.status(404).json({
@@ -245,10 +248,10 @@ export const deleteUserhard = async (req, res) => {
 
     if (user.deleted === true) {
 
-      await User.findByIdAndDelete({ userId })
-      await File.findByIdAndDelete({ userId })
-      await Directory.findByIdAndDelete({ userId })
-      await Session.findByIdAndDelete({ userId })
+      await User.findByIdAndDelete(userId )
+      await File.deleteMany({ userId })
+      await Directory.deleteMany({ userId })
+      await Session.deleteMany({ userId })
     }
 
     return res.json({
