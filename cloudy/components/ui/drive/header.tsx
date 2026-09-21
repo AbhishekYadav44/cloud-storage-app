@@ -43,11 +43,11 @@ export default function Header() {
                     </span>
 
 
-                    {open ? <span className="text-xs text-slate-400">
-                        <ChevronDown />
-                    </span> : <span className="text-xs text-slate-400">
-                        <ChevronUp />
-                    </span>}
+                    {open ? (
+                        <ChevronUp size={18} className="text-slate-400" />
+                    ) : (
+                        <ChevronDown size={18} className="text-slate-400" />
+                    )}
                 </button>
 
             </div>
