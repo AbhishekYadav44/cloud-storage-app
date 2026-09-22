@@ -1,3 +1,4 @@
+"use client"
 
 import Link from "next/link";
 import {
@@ -10,8 +11,22 @@ import {
   Zap,
 } from "lucide-react";
 import DashboardPreview from "./DashboardPreview";
+import { useEffect, useState } from "react";
+import { getCurrentUser } from "@/app/services/users";
+
+
 
 export default function Hero() {
+   
+  const [user,setUser] = useState(null);
+
+  useEffect(()=>{
+    getCurrentUser().then((data)=>{
+      setUser(data)
+    }).catch((e)=>{
+      setUser(null)
+    })
+  })
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-white via-slate-50 to-white">
       <div className="absolute -left-40 top-10 h-96 w-96 rounded-full bg-blue-200/40 blur-3xl" />
@@ -39,20 +54,21 @@ export default function Hero() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link
+            {user ?  <Link 
+              href="/drive"
+              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-3.5 font-semibold text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-2xl"
+            >
+              Get Started
+              <ArrowRight size={18} />
+            </Link> :  <Link 
               href="/register"
               className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-3.5 font-semibold text-white shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-2xl"
             >
               Get Started
               <ArrowRight size={18} />
-            </Link>
-
-            <Link
-              href="/login"
-              className="rounded-xl border border-slate-300 bg-white px-6 py-3.5 font-semibold text-slate-700 transition hover:border-blue-600 hover:text-blue-600"
-            >
-              Login
-            </Link>
+            </Link> }
+            
+            
           </div>
 
           <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-3">

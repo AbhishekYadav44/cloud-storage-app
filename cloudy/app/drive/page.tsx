@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,88 +6,84 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Content from "@/components/ui/drive/Content";
 import Header from "@/components/ui/drive/header";
 import Sidebar from "@/components/ui/drive/sidebar";
-import { createDirectory } from "@/app/services/directory";
 
 import { getDirectory } from "@/app/services/directory";
 
-
 type DirEntry = {
-  id: string;
-  name: string;
+    id: string;
+    name: string;
+};
+
+type FileEntry = {
+    id: string;
+    name: string;
 };
 
 type DirectoryData = {
-  _id: string;
-  name: string;
-  parentDirId: string | null;
-  directories: DirEntry[];
-  files: {
-    id: string;
+    _id: string;
     name: string;
-  }[];
+    parentDirId: string | null;
+    directories: DirEntry[];
+    files: FileEntry[];
 };
 
-
 export default function Drive() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
-  const currentId = searchParams.get("id") || undefined;
+    const currentId = searchParams.get("id") || undefined;
 
-  const [dir, setDir] = useState<DirectoryData | null>(null);
+    const [dir, setDir] = useState<DirectoryData | null>(null);
 
-  useEffect(() => {
-    loadDirectory();
-  }, [currentId]);
+    useEffect(() => {
+        loadDirectory();
+    }, [currentId]);
 
-  async function loadDirectory() {
-    try {
-      const data = await getDirectory(currentId);
-      setDir(data);
-    } catch (err) {
-      console.log(err);
+    async function loadDirectory() {
+        try {
+            const data = await getDirectory(currentId);
+            setDir(data);
+        } catch (err) {
+            console.log(err);
+        }
     }
-  }
-  async function handleCreateFolder() {
-    const name = window.prompt("Folder name?");
 
-    if (!name) return;
-
-    try {
-      await createDirectory(currentId, name);
-      loadDirectory();
-    } catch (err) {
-      alert(
-        err instanceof Error
-          ? err.message
-          : "Could not create folder"
-      );
+    function openFolder(id: string) {
+        router.push(`/drive?id=${id}`);
     }
-  }
 
-  function openFolder(id: string) {
-    router.push(`/drive?id=${id}`);
-  }
+    return (
+        <div className="flex min-h-screen flex-col">
 
-  return (
-    <div className="flex min-h-screen flex-col">
+            <Header />
 
-      <Header />
+            <div className="flex flex-1">
 
-      <div className="flex flex-1">
+                <Sidebar
+                    currentDirId={dir?._id}
+                    onUploadComplete={loadDirectory}
+                />
 
-        <Sidebar />
+                <main className="flex-1">
 
-        <main className="flex-1">
-          <Content
-            directories={dir?.directories ?? []}
-            onOpenFolder={openFolder}
-            onCreateFolder={handleCreateFolder}
-          />
-        </main>
+                    <Content
+                        directories={dir?.directories ?? []}
+                        files={dir?.files ?? []}
+                        currentDirectoryName={
+                            dir?.name ?? "My Files"
+                        }
+                        parentDirId={
+                            dir?.parentDirId ?? null
+                        }
+                        currentDirId={dir?._id}
+                        onOpenFolder={openFolder}
+                        onRefresh={loadDirectory}
+                    />
 
-      </div>
+                </main>
 
-    </div>
-  );
+            </div>
+
+        </div>
+    );
 }
