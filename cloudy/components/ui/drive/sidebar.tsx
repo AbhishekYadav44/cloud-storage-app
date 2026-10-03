@@ -4,7 +4,7 @@ import { Upload, Home, Folder } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import { uploadFile } from "@/app/services/file";
+import { uploadFile, uploadinitiate } from "@/app/services/file";
 
 type SidebarProps = {
     currentDirId?: string;
@@ -28,18 +28,27 @@ export default function Sidebar({
 
         setUploading(true);
 
-        try {
-            await uploadFile(currentDirId, file);
-            onUploadComplete();
-        } catch (err) {
-            alert(
-                err instanceof Error
-                    ? err.message
-                    : "Could not upload file"
-            );
-        } finally {
-            setUploading(false);
-        }
+      const data =   await uploadinitiate({
+            name: file.name,
+            size: file.size,
+            contentType: file.type,
+            parentDirId: currentDirId
+        })
+
+         console.log(data)
+        
+        // try {
+        //     await uploadFile(currentDirId, file);
+        //     onUploadComplete();
+        // } catch (err) {
+        //     alert(
+        //         err instanceof Error
+        //             ? err.message
+        //             : "Could not upload file"
+        //     );
+        // } finally {
+        //     setUploading(false);
+        // }
     }
 
     return (

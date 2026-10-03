@@ -3,6 +3,7 @@ import { rm } from "fs/promises";
 import path from "path";
 import Directory from "../models/directoryModel.js";
 import File from "../models/fileModel.js";
+import { createUploadSignedurl } from "../config/s3.js";
 
 export const uploadFile = async (req, res, next) => {
   const parentDirId = req.params.parentDirId || req.user.rootDirId;
@@ -12,7 +13,7 @@ export const uploadFile = async (req, res, next) => {
       userId: req.user._id,
     });
 
-    
+
     if (!parentDirData) {
       return res.status(404).json({ error: "Parent directory not found!" });
     }
@@ -58,14 +59,14 @@ export const getFile = async (req, res) => {
     return res.status(404).json({ error: "File not found!" });
   }
 
-  
+
   const filePath = `${process.cwd()}/storage/${id}${fileData.extension}`;
 
   if (req.query.action === "download") {
     return res.download(filePath, fileData.name);
   }
 
-  
+
   return res.sendFile(filePath, (err) => {
     if (!res.headersSent && err) {
       return res.status(404).json({ error: "File not found!" });
@@ -114,3 +115,40 @@ export const deleteFile = async (req, res, next) => {
     next(err);
   }
 };
+
+
+export const uploadinitiate = async (req, res) => {
+  const parentDirId = req.body.parentDirId || req.user.rootDirId;
+  console.log(req.body);
+  try {
+    const parentDirData = await Directory.findOne({
+      _id: parentDirId,
+      userId: req.user._id,
+    });
+
+
+    if (!parentDirData) {
+      return res.status(404).json({ error: "Parent directory not found!" });
+    }
+
+    const filename = req.headers.filename || "untitled";
+    const extension = path.extname(filename);
+
+    const insertedFile = await File.create({
+      name : req.body.name,
+      extension,
+      size : req.body.size,
+      contentType : req.body.contentType,
+      parentDirId: parentDirData._id,
+      userId: req.user._id,
+    });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+
+  // createUploadSignedurl({
+  //   key: req.file.
+  // })
+  res.json({ uploadinitiate: "testruoute" })
+}

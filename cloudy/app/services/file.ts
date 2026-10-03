@@ -61,7 +61,24 @@ export const getFileUrl = (
   id: string,
   download = false
 ) => {
-  return `${BASE_URL}/file/${id}${
-    download ? "?action=download" : ""
-  }`;
+  return `${BASE_URL}/file/${id}${download ? "?action=download" : ""
+    }`;
 };
+
+export const uploadinitiate = async (fileData: any) => {
+  console.log("fileData:", fileData);
+  console.log("is FormData:", fileData instanceof FormData);
+
+  const res = await fetch(`${BASE_URL}/file/upload/initiate`, {
+    method : "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(fileData),
+    credentials: "include",
+  });
+  console.log("res", res)
+  let data = await res.json()
+  return data;
+
+}

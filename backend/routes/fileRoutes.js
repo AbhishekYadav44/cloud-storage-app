@@ -5,12 +5,14 @@ import {
   getFile,
   renameFile,
   uploadFile,
+  uploadinitiate,
 } from "../controllers/fileController.js";
 
 const router = express.Router();
 
 router.param("parentDirId", validateIdMiddleware);
 router.param("id", validateIdMiddleware);
+router.post("/upload/initiate", uploadinitiate)
 
 router.post("/:parentDirId?", uploadFile);
 
